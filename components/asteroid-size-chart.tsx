@@ -1,93 +1,103 @@
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts"
+"use client";
 
-// This would normally fetch from an API, but for demo purposes we're using static data
-const asteroidData = [
-  { name: "Bennu", diameter: 0.49, color: "#9333ea" },
-  { name: "Apophis", diameter: 0.37, color: "#8b5cf6" },
-  { name: "2020 QG", diameter: 0.003, color: "#a78bfa" },
-  { name: "Didymos", diameter: 0.78, color: "#7c3aed" },
-  { name: "Ryugu", diameter: 0.9, color: "#6d28d9" },
-  { name: "1998 OR2", diameter: 2.1, color: "#5b21b6" },
-  { name: "Eros", diameter: 16.8, color: "#4c1d95" },
-  { name: "Vesta", diameter: 525, color: "#2e1065" },
-]
+import { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, LogarithmicScale, Tooltip, Legend, ChartOptions } from "chart.js";
 
-// Add comparison objects
+ChartJS.register(BarElement, CategoryScale, LinearScale, LogarithmicScale, Tooltip, Legend);
+
 const comparisonData = [
-  { name: "Basketball", diameter: 0.00024, color: "#f97316" },
-  { name: "Bus", diameter: 0.012, color: "#f59e0b" },
-  { name: "Football Field", diameter: 0.1, color: "#84cc16" },
-  { name: "Empire State", diameter: 0.443, color: "#10b981" },
-  { name: "Central Park", diameter: 4, color: "#06b6d4" },
-  { name: "Manhattan", diameter: 21.6, color: "#0ea5e9" },
-]
+	{ name: "Баскетбольний м'яч", diameter: 0.00024, color: "#f97316" },
+	{ name: "Автобус", diameter: 0.012, color: "#f59e0b" },
+	{ name: "Футбольне поле", diameter: 0.1, color: "#84cc16" },
+	{ name: "Емпайр Стейт", diameter: 0.443, color: "#10b981" },
+	{ name: "Центральний парк", diameter: 4, color: "#06b6d4" },
+	{ name: "Манхеттен", diameter: 21.6, color: "#0ea5e9" },
+];
 
-// Combine and sort by size
-const combinedData = [...asteroidData, ...comparisonData].sort((a, b) => a.diameter - b.diameter)
+const getColor = (index: number) => {
+	const colors = ["#9333ea", "#8b5cf6", "#a78bfa", "#7c3aed", "#6d28d9", "#5b21b6", "#4c1d95", "#2e1065"];
+	return colors[index % colors.length];
+};
 
 export default function AsteroidSizeChart() {
-  return (
-    <div className="h-96">
-      <ResponsiveContainer width="100%" height="100%">
-        <ChartContainer>
-          <BarChart data={combinedData} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#444" horizontal={false} />
-            <XAxis
-              type="number"
-              domain={[0.0001, "dataMax"]}
-              scale="log"
-              tick={{ fill: "#888" }}
-              tickFormatter={(value) => value.toFixed(2)}
-              label={{
-                value: "Diameter (km) - Log Scale",
-                position: "bottom",
-                offset: 0,
-                fill: "#888",
-              }}
-            />
-            <YAxis dataKey="name" type="category" tick={{ fill: "#888" }} width={100} />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  const data = payload[0].payload
-                  return (
-                    <ChartTooltip>
-                      <ChartTooltipContent>
-                        <div className="font-bold">{data.name}</div>
-                        <div className="text-sm">
-                          Diameter:{" "}
-                          {data.diameter < 0.01
-                            ? `${(data.diameter * 1000).toFixed(1)} meters`
-                            : `${data.diameter.toFixed(2)} km`}
-                        </div>
-                      </ChartTooltipContent>
-                    </ChartTooltip>
-                  )
-                }
-                return null
-              }}
-            />
-            <Bar
-              dataKey="diameter"
-              fill="#8884d8"
-              radius={[0, 4, 4, 0]}
-              barSize={20}
-              label={{
-                position: "right",
-                fill: "#fff",
-                fontSize: 12,
-                formatter: (value: number) =>
-                  value < 0.01 ? `${(value * 1000).toFixed(1)}m` : `${value.toFixed(2)}km`,
-              }}
-            >
-              {combinedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
-      </ResponsiveContainer>
-    </div>
-  )
+	const [asteroids, setAsteroids] = useState<any[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		async function fetchAsteroids() {
+			setLoading(true);
+			try {
+				const res = await fetch("https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=DEMO_KEY");
+				const data = await res.json();
+				const formatted = data.near_earth_objects.slice(0, 10).map((obj: any, index: number) => ({
+					name: obj.name,
+					diameter: obj.estimated_diameter.kilometers.estimated_diameter_max,
+					color: getColor(index),
+				}));
+				setAsteroids(formatted);
+			} catch (err) {
+				console.error("Error fetching data", err);
+			} finally {
+				setLoading(false);
+			}
+		}
+		fetchAsteroids();
+	}, []);
+
+	const combinedData = [...asteroids, ...comparisonData].sort((a, b) => a.diameter - b.diameter);
+
+	const chartData = {
+		labels: combinedData.map((d) => d.name),
+		datasets: [
+			{
+				label: "Діаметр (km)",
+				data: combinedData.map((d) => d.diameter),
+				backgroundColor: combinedData.map((d) => d.color),
+				borderRadius: 4,
+			},
+		],
+	};
+
+	const options: ChartOptions<"bar"> = {
+		indexAxis: "y",
+		responsive: true,
+		plugins: {
+			tooltip: {
+				callbacks: {
+					label: function (context) {
+						const value = context.raw as number;
+						return value < 0.01 ? `Діаметр: ${(value * 1000).toFixed(1)} метри` : `Діаметр: ${value.toFixed(2)} km`;
+					},
+				},
+			},
+			legend: { display: false },
+		},
+		scales: {
+			x: {
+				type: "logarithmic",
+				min: 0.0001,
+				ticks: {
+					callback: (value: any) => (value.toFixed ? value.toFixed(2) : value),
+					color: "#888",
+				},
+				title: {
+					display: true,
+					text: "Діаметр (km) - Log Scale",
+					color: "#888",
+				},
+			},
+			y: {
+				ticks: { color: "#888" },
+			},
+		},
+	};
+
+	if (loading) return <div>Завантаження...</div>;
+
+	return (
+		<div className="h-[600px]">
+			<Bar data={chartData} options={options} />
+		</div>
+	);
 }

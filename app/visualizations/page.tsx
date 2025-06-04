@@ -14,21 +14,23 @@ export default function VisualizationsPage() {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="mb-8">
-				<h1 className="text-3xl font-bold mb-2">Space Data Visualizations</h1>
-				<p className="text-gray-400">Explore interactive charts and visualizations of space data from NASA and other sources.</p>
+				<h1 className="text-3xl font-bold mb-2">Візуалізація космічних об'єктів</h1>
+				<p className="text-gray-400">Досліджуйте інтерактивні діаграми та візуалізації космічних даних від NASA та інших джерел.</p>
 			</div>
 
 			<Tabs defaultValue="asteroids">
 				<TabsList className="grid w-full grid-cols-3 mb-8">
-					<TabsTrigger value="asteroids">Asteroid Sizes</TabsTrigger>
-					<TabsTrigger value="mars-weather">Mars Weather</TabsTrigger>
-					<TabsTrigger value="exoplanets">Exoplanets</TabsTrigger>
+					<TabsTrigger value="asteroids">Розміри Астероїдів</TabsTrigger>
+					<TabsTrigger value="mars-weather">Погода на Марсі</TabsTrigger>
+					<TabsTrigger value="exoplanets">Екзопланети</TabsTrigger>
 				</TabsList>
 
 				<TabsContent value="asteroids">
 					<div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-						<h2 className="text-2xl font-bold mb-4">Asteroid Size Comparison</h2>
-						<p className="text-gray-400 mb-6">Visualizing the relative sizes of notable near-Earth asteroids compared to familiar objects.</p>
+						<h2 className="text-2xl font-bold mb-4">Порівняння розмірів астероїдів</h2>
+						<p className="text-gray-400 mb-6">
+							Візуалізація відносних розмірів помітних навколоземних астероїдів у порівнянні зі знайомими об'єктами.
+						</p>
 
 						<Suspense
 							fallback={
@@ -37,7 +39,7 @@ export default function VisualizationsPage() {
 								</div>
 							}
 						>
-							{/* <AsteroidSizeChart /> */}
+							<AsteroidSizeChart />
 						</Suspense>
 					</div>
 				</TabsContent>
@@ -54,7 +56,7 @@ export default function VisualizationsPage() {
 								</div>
 							}
 						>
-							{/* <MarsWeatherChart /> */}
+							<MarsWeatherChart />
 						</Suspense>
 					</div>
 				</TabsContent>
@@ -71,7 +73,7 @@ export default function VisualizationsPage() {
 								</div>
 							}
 						>
-							{/* <ExoplanetChart /> */}
+							<ExoplanetChart />
 						</Suspense>
 					</div>
 				</TabsContent>

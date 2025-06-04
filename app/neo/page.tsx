@@ -12,16 +12,16 @@ export default function NeoPage() {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="mb-8">
-				<h1 className="text-3xl font-bold mb-2">Near-Earth Objects</h1>
+				<h1 className="text-3xl font-bold mb-2">Навколоземні об'єкти</h1>
 				<p className="text-gray-400">
-					Track and visualize asteroids and comets that pass close to Earth over the next 7 days. Data is provided by NASA's Near Earth Object Web
-					Service (NeoWs).
+					Відстежуйте та візуалізуйте астероїди та комети, які пройдуть близько до Землі протягом наступних 7 днів. Дані надані веб-службою NASA's
+					Near Earth Object Web (NeoWs).
 				</p>
 			</div>
 
 			<div className="grid grid-cols-1 gap-8">
 				<section>
-					<h2 className="text-2xl font-bold mb-4">NEO Activity Chart</h2>
+					<h2 className="text-2xl font-bold mb-4">Активність навколоземних обєктів</h2>
 					<div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
 						<Suspense
 							fallback={
@@ -36,7 +36,7 @@ export default function NeoPage() {
 				</section>
 
 				<section>
-					<h2 className="text-2xl font-bold mb-4">Upcoming Near-Earth Objects</h2>
+					<h2 className="text-2xl font-bold mb-4">Найближчі навколоземні об'єкти</h2>
 					<Suspense
 						fallback={
 							<div className="flex justify-center items-center h-96">

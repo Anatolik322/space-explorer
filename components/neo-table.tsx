@@ -11,10 +11,9 @@ async function getNeoData() {
 	const endDateStr = format(endDate, "yyyy-MM-dd");
 
 	try {
-		const response = await fetch(
-			`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateStr}&end_date=${endDateStr}&api_key=DEMO_KEY`,
-			{ next: { revalidate: 3600 } } // Revalidate every hour
-		);
+		const response = await fetch(`https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDateStr}&end_date=${endDateStr}&api_key=DEMO_KEY`, {
+			next: { revalidate: 3600 },
+		});
 
 		if (!response.ok) {
 			throw new Error(`NASA API responded with status: ${response.status}`);
@@ -34,7 +33,6 @@ export default async function NeoTable() {
 		return <div className="text-center py-8">Failed to load NEO data</div>;
 	}
 
-	// Process and flatten data for table
 	const tableData = Object.entries(data.near_earth_objects)
 		.flatMap(([date, objects]) => {
 			return (objects as any[]).map((obj) => {
@@ -58,12 +56,12 @@ export default async function NeoTable() {
 			<Table>
 				<TableHeader className="bg-gray-900">
 					<TableRow>
-						<TableHead>Name</TableHead>
-						<TableHead>Date</TableHead>
-						<TableHead className="text-right">Diameter (km)</TableHead>
-						<TableHead className="text-right">Velocity (km/h)</TableHead>
-						<TableHead className="text-right">Miss Distance (km)</TableHead>
-						<TableHead>Status</TableHead>
+						<TableHead>Назва</TableHead>
+						<TableHead>Дата</TableHead>
+						<TableHead className="text-right">Діаметр (км)</TableHead>
+						<TableHead className="text-right">Швидкість (км/год)</TableHead>
+						<TableHead className="text-right">Мінімальна відстань (км)</TableHead>
+						<TableHead>Статус</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -78,11 +76,11 @@ export default async function NeoTable() {
 								{neo.isHazardous ? (
 									<Badge variant="destructive" className="flex items-center gap-1">
 										<AlertTriangle className="h-3 w-3" />
-										Potentially Hazardous
+										Потенційна загроза
 									</Badge>
 								) : (
 									<Badge variant="outline" className="bg-green-950 text-green-400 border-green-800">
-										Safe
+										Безпечно
 									</Badge>
 								)}
 							</TableCell>
